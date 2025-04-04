@@ -5,10 +5,15 @@ public class BoundaryChecker : MonoBehaviour
     public Transform player;
     private TextureBoundaryDetector boundaryDetector;
     private SpriteRenderer spriteRenderer;
+    private MaskController maskController;
     public  bool isBoundary;
     void Start()
     {
+
+        maskController = FindObjectOfType<MaskController>(); // MaskControllerを取得
         boundaryDetector = FindObjectOfType<TextureBoundaryDetector>();
+
+        CreateInitialRectangleCollider();
 
         if (boundaryDetector == null)
         {
@@ -165,5 +170,39 @@ public class BoundaryChecker : MonoBehaviour
         }
 
         return closestPoint;
+    }
+
+    void CreateInitialRectangleCollider()
+    {
+        // サイズと中心位置の指定（必要に応じて調整可能）
+        Vector2 center = new Vector2(0f, -1f);
+        float width = 3f;
+        float height = 2f;
+
+        // 四角形の頂点を時計回りで設定
+        Vector2[] rectanglePoints = new Vector2[]
+        {
+        new Vector2(center.x - width / 2, center.y - height / 2), // 左下
+        new Vector2(center.x - width / 2, center.y + height / 2), // 左上
+        new Vector2(center.x + width / 2, center.y + height / 2), // 右上
+        new Vector2(center.x + width / 2, center.y - height / 2)  // 右下
+        };
+
+        // GameObject と PolygonCollider2D を作成
+        GameObject initialPoly = new GameObject("InitialPolygon");
+        PolygonCollider2D polyCollider = initialPoly.AddComponent<PolygonCollider2D>();
+        initialPoly.tag = "myarea";
+
+        polyCollider.points = rectanglePoints;
+
+        // オブジェクトをワールドの中心に配置
+        initialPoly.transform.position = Vector3.zero;
+
+        if (maskController != null)
+        {
+            maskController.ApplyMask(polyCollider);
+        }
+        // デバッグログ
+        Debug.Log("初期の四角いPolygonCollider2Dを生成しました");
     }
 }

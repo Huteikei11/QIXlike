@@ -42,6 +42,7 @@ public class PlayerMovementpix : MonoBehaviour
         {
             Debug.LogError("MaskController ‚ªƒV[ƒ““à‚ÉŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
         }
+
     }
 
     void FixedUpdate()
@@ -336,4 +337,8 @@ public class PlayerMovementpix : MonoBehaviour
         }
         pathPoints.Clear();
     }
+
+
+
+
 }

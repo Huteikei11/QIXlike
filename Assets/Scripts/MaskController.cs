@@ -11,6 +11,7 @@ public class MaskController : MonoBehaviour
 
     private Color[] maskPixels;
     private int width, height;
+    public float alphaThreshold = 0.1f; // 不透明とみなすアルファ値の閾値
 
     void Start()
     {
@@ -97,8 +98,11 @@ public class MaskController : MonoBehaviour
 
         maskTexture.SetPixels(maskPixels);
         maskTexture.Apply();
+
+        ClearDisconnectedPixels();
         //画像を置き換える
         textureBoundaryDetector.ReTexture(maskTexture);
+
     }
 
     private bool IsPointInPolygon(Vector2 point, Vector2[] polygon)
@@ -114,5 +118,63 @@ public class MaskController : MonoBehaviour
             }
         }
         return inside;
+    }
+
+
+
+    public void ClearDisconnectedPixels()
+    {
+        Color[] pixels = maskTexture.GetPixels();
+        int width = maskTexture.width;
+        int height = maskTexture.height;
+
+        bool[] visited = new bool[pixels.Length];
+        HashSet<int> connectedPixels = new HashSet<int>();
+
+        // Flood Fillで0,0から繋がる不透明ピクセルを探索
+        FloodFill(pixels, 0, 0, width, height, visited, connectedPixels);
+
+        // 繋がっていないピクセルを透明化
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            if (!connectedPixels.Contains(i))
+            {
+                pixels[i].a = 0.0f; // 完全に透明化
+            }
+        }
+
+        // テクスチャに変更を適用
+        maskTexture.SetPixels(pixels);
+        maskTexture.Apply();
+    }
+
+    private void FloodFill(Color[] pixels, int startX, int startY, int width, int height, bool[] visited, HashSet<int> connectedPixels)
+    {
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        queue.Enqueue(new Vector2Int(startX, startY));
+
+        while (queue.Count > 0)
+        {
+            Vector2Int current = queue.Dequeue();
+            int x = current.x;
+            int y = current.y;
+            int index = y * width + x;
+
+            if (x < 0 || y < 0 || x >= width || y >= height || visited[index])
+                continue;
+
+            visited[index] = true;
+
+            if (pixels[index].a <= alphaThreshold)
+                continue;
+
+            connectedPixels.Add(index);
+
+            // 周囲4方向を探索
+            queue.Enqueue(new Vector2Int(x - 1, y));
+            queue.Enqueue(new Vector2Int(x + 1, y));
+            queue.Enqueue(new Vector2Int(x, y - 1));
+            queue.Enqueue(new Vector2Int(x, y + 1));
+        }
     }
 }
