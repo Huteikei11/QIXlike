@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +28,7 @@ public class PlayerMovementpix : MonoBehaviour
     // 接触しているオブジェクトを管理するリスト
     private List<Collider2D> currentColliders = new List<Collider2D>();
 
-    private bool allowSpace = true;
+    public bool allowSpace = true;
 
     public float threshold = 0.2f; // 判定に使う距離のしきい値
 
@@ -44,14 +45,19 @@ public class PlayerMovementpix : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        HandleMovementInput();
-    }
-
     void FixedUpdate()
     {
+        HandleMovementInput();
         MovePlayer();
+
+        if (moveDirection != Vector2.zero && !boundarychecker.isBoundary)
+        {
+            // 領域外にいる間だけ記録
+            if (pathPoints.Count == 0 || Vector2.Distance(pathPoints.Last(), transform.position) > 0.01f)
+            {
+                RecordPoint();
+            }
+        }
     }
 
     void HandleMovementInput()
@@ -59,14 +65,30 @@ public class PlayerMovementpix : MonoBehaviour
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
 
-        if (moveX != 0 && moveY != 0)
+        if (moveX != 0)
         {
-            moveY = 0; // 斜め移動禁止
+            moveY = 0; // 水平方向の入力がある場合、垂直移動を無視
+        }
+        else if (moveY != 0)
+        {
+            moveX = 0; // 垂直方向の入力がある場合、水平方向を無視
         }
 
         moveSpeed = moveSpeed_tmp;
         Vector2 nextPosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * moveSpeed * Time.fixedDeltaTime;
 
+
+        // 渡すときだけ Vector3 に変換（z = 1）
+        if (textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1))))
+        {
+            moveDirection = new Vector2(moveX, moveY).normalized;
+        }
+        else
+        {
+            //角を曲がるときは速度を落とさないとうまくいかない
+            //スピードを落として再判定
+            moveSpeed = 0.5f;
+            nextPosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * moveSpeed * Time.fixedDeltaTime;
 
             // 渡すときだけ Vector3 に変換（z = 1）
             if (textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1))))
@@ -75,56 +97,46 @@ public class PlayerMovementpix : MonoBehaviour
             }
             else
             {
-                //角を曲がるときは速度を落とさないとうまくいかない
-                //スピードを落として再判定
-                moveSpeed = 0.5f;
-                nextPosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * moveSpeed * Time.fixedDeltaTime;
-
-                // 渡すときだけ Vector3 に変換（z = 1）
-                if (textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1))))
-                {
-                    moveDirection = new Vector2(moveX, moveY).normalized;
-                }
-                else
-                {
-                    moveDirection = Vector2.zero; // 移動不可なら停止
-                }
+                //moveDirection = moveDirection != Vector2.zero ? moveDirection : Vector2.zero;
+                moveDirection = Vector2.zero; // 移動不可なら停止
             }
-            //スペースキーが押されているとき
-           if (Input.GetKey(KeyCode.Space)&&allowSpace)
-           {
+        }
+        //スペースキーが押されているとき
+        if (Input.GetKey(KeyCode.Space) && allowSpace)
+        {
             moveSpeed = moveSpeed_tmp;
             moveDirection = new Vector2(moveX, moveY).normalized;
 
-               //領域内から領域外にでる
-               if (boundarychecker.isBoundary && !textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1))))
-               {
-                Vector2 prePosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * (-1*moveSpeed) * Time.fixedDeltaTime;
+            //領域内から領域外にでる
+            if (boundarychecker.isBoundary && !textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1))))
+            {
+                //Vector2 prePosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * (-1*moveSpeed) * Time.fixedDeltaTime;
+                Vector3 prePosition2D = transform.position; // 逆方向に戻さない
                 ExitArea(prePosition2D);
-               }
-               //領域外から領域内にもどる
-               else if (!boundarychecker.isBoundary && textureboundarydetector.IsInTransparentArea(nextPosition2D))
-               {
-                   EnterArea(nextPosition2D);
-                   boundarychecker.WarpToClosestBoundary();
-                   moveDirection = Vector2.zero;
-                   allowSpace = false;
-               }
-           //外にいるときに一
-           if (!boundarychecker.isBoundary&& IsPointOnLine(nextPosition2D)&&(new Vector2(moveX,moveY) != Vector2.zero))
-           {
+            }
+            //領域外から領域内にもどる
+            else if (!boundarychecker.isBoundary && textureboundarydetector.IsInTransparentArea(nextPosition2D))
+            {
+                EnterArea(nextPosition2D);
+                boundarychecker.WarpToClosestBoundary();
+                moveDirection = Vector2.zero;
+                //allowSpace = false;
+            }
+            //外にいるときに一
+            if (!boundarychecker.isBoundary && IsPointOnLine(nextPosition2D) && (new Vector2(moveX, moveY) != Vector2.zero))
+            {
                 Debug.Log("同じ点を通りました");
                 //最初の点に戻る
                 Vector2 firstPoint = pathPoints[0];
                 transform.position = firstPoint;
-                pathPoints.Clear();
+                //pathPoints.Clear();
             }
 
-                    // LineRendererで経路を描画
-                    lineRenderer.positionCount = pathPoints.Count;
-                    lineRenderer.SetPositions(ConvertToVector3Array(pathPoints));
+            // LineRendererで経路を描画
+            lineRenderer.positionCount = pathPoints.Count;
+            lineRenderer.SetPositions(ConvertToVector3Array(pathPoints));
 
-           }
+        }
         if (Input.GetKeyUp(KeyCode.Space))
         {
             if (!boundarychecker.isBoundary)
@@ -133,17 +145,9 @@ public class PlayerMovementpix : MonoBehaviour
                 Vector2 firstPoint = pathPoints[0];
                 transform.position = firstPoint;
             }
-            pathPoints.Clear();
+            //pathPoints.Clear();
             allowSpace = true;
         }
-
-
-        if (moveDirection != Vector2.zero && moveDirection != lastDirection)
-        {
-            RecordPoint();
-            lastDirection = moveDirection;
-        }
-
     }
 
     void MovePlayer()
@@ -194,15 +198,29 @@ public class PlayerMovementpix : MonoBehaviour
 
     void RecordPoint()
     {
-        Vector2 point2D = new Vector2(transform.position.x, transform.position.y);
-        // 変換した Vector2 を pathPoints に追加
-        Debug.Log($"{point2D}");
-        pathPoints.Add(point2D);
+        Debug.Log($"{transform.position}");
+        pathPoints.Add(transform.position);
+    }
+
+    void CloseShape()
+    {
+        if (pathPoints.Count > 2 && pathPoints[0] != pathPoints[pathPoints.Count - 1])
+        {
+            pathPoints.Add(pathPoints[0]); // 最初の点を最後に追加して閉じる
+        }
+    }
+
+    void DebugPathPoints()
+    {
+        foreach (Vector2 point in pathPoints)
+        {
+            Debug.Log($"Point: {point}");
+        }
     }
 
     private Vector3[] ConvertToVector3Array(List<Vector2> pathPoints)
     {
-        pathPoints.Add(transform.position);
+        //pathPoints.Add(transform.position);
         Vector3[] positions = new Vector3[pathPoints.Count];
         for (int i = 0; i < pathPoints.Count; i++)
         {
@@ -213,26 +231,37 @@ public class PlayerMovementpix : MonoBehaviour
 
     void EnterArea(Vector2 next)
     {
+        allowSpace = true;
+        Debug.Log($"[記録点数]: {pathPoints.Count}");
         Debug.Log("領域に戻りました");
-        Debug.Log(string.Join(", ", pathPoints.Select(p => p.ToString()).ToArray()));
         StopPlayer();
         if (isOutsideMyArea)
         {
-            pathPoints.Add(next); // 最終点
-            Debug.Log($"{next}");
+            RecordPoint();//最終点
+            CloseShape();//ちゃんと閉じる
+            DebugPathPoints();//デバッグ
             GeneratePolygonCollider();
         }
         isOutsideMyArea = false;
-        //pathPoints.Clear();
+        Debug.Log($"[記録点数]: {pathPoints.Count}");
+        // Coroutine で次のフレームにクリア
+        //StartCoroutine(ClearPathPointsNextFrame());
     }
 
-    void ExitArea(Vector2 pre)
+    IEnumerator ClearPathPointsNextFrame()
+    {
+        yield return null; // 1フレーム待機
+        pathPoints.Clear();
+    }
+
+    void ExitArea(Vector3 pre)
     {
         //pathPoints.Clear();
+        pathPoints.Add(pre); // 直前の点（領域内の出口点）
+        RecordPoint(); // 出た直後の点
         Debug.Log("領域から出ました");
         isOutsideMyArea = true;
-        Debug.Log($"{pre}");
-        pathPoints.Add(pre); // 最初の点を記録
+        //pathPoints.Add(pre); // 最初の点を記録
 
     }
 
