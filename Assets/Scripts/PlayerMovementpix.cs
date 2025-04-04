@@ -194,7 +194,10 @@ public class PlayerMovementpix : MonoBehaviour
 
     void RecordPoint()
     {
-        pathPoints.Add(transform.position);
+        Vector2 point2D = new Vector2(transform.position.x, transform.position.y);
+        // 変換した Vector2 を pathPoints に追加
+        Debug.Log($"{point2D}");
+        pathPoints.Add(point2D);
     }
 
     private Vector3[] ConvertToVector3Array(List<Vector2> pathPoints)
@@ -211,21 +214,24 @@ public class PlayerMovementpix : MonoBehaviour
     void EnterArea(Vector2 next)
     {
         Debug.Log("領域に戻りました");
+        Debug.Log(string.Join(", ", pathPoints.Select(p => p.ToString()).ToArray()));
         StopPlayer();
         if (isOutsideMyArea)
         {
             pathPoints.Add(next); // 最終点
+            Debug.Log($"{next}");
             GeneratePolygonCollider();
         }
         isOutsideMyArea = false;
-        pathPoints.Clear();
+        //pathPoints.Clear();
     }
 
     void ExitArea(Vector2 pre)
     {
-        pathPoints.Clear();
+        //pathPoints.Clear();
         Debug.Log("領域から出ました");
         isOutsideMyArea = true;
+        Debug.Log($"{pre}");
         pathPoints.Add(pre); // 最初の点を記録
 
     }
@@ -283,26 +289,6 @@ public class PlayerMovementpix : MonoBehaviour
 
     void GeneratePolygonCollider()
     {
-        //ここから
-        if (pathPoints.Count < 3)
-        {
-            Debug.LogWarning("多角形が成立しません。ランダムな方向で修正を試みます。");
-            AdjustPathForPolygon();
-        }
-        if (pathPoints.Count % 2 == 1)//奇数なら点を足す
-        {
-            if (pathPoints.Count == 3)
-            {
-                AddPointToEvenNumber(pathPoints[0], pathPoints[1], pathPoints[2]);
-            }
-            else
-            {
-                //Vector2 pointB = CalculateRightAnglePoint(pathPoints[0], pathPoints[pathPoints.Count - 1]);
-                //pathPoints.Add(pointB);
-            }
-
-        }
-        //ここまでたぶんいらない
 
         GameObject newPoly = new GameObject("GeneratedPolygon");
         PolygonCollider2D polyCollider = newPoly.AddComponent<PolygonCollider2D>();
@@ -323,58 +309,6 @@ public class PlayerMovementpix : MonoBehaviour
 
             maskController.ApplyMask(polyCollider);
         }
-    }
-
-    void AddPointToEvenNumber(Vector2 p1, Vector2 p2, Vector2 p3)
-    {
-        // 直角三角形の直角がp2にあるので、直角を形成する2辺を基に残りの点を計算
-        // p1とp3が直角三角形の辺で、p2が直角
-        Vector2 p4 = p1 + p3 - p2;
-        pathPoints.Add(p4);
-    }
-
-    // 点Aと点Cから直角三角形の直角の点Bを計算
-    Vector2 CalculateRightAnglePoint(Vector2 A, Vector2 C)
-    {
-        // 直線ACのベクトルを求める
-        Vector2 AC = C - A;
-
-        // ACの方向ベクトルに垂直なベクトルを計算
-        // 2Dベクトルの垂直ベクトルは (x, y) -> (-y, x) または (y, -x)
-        Vector2 perpendicular = new Vector2(-AC.y, AC.x);
-
-        // 点Cの象限を確認
-        Vector2 pointB = Vector2.zero;
-        if (C.x > 0 && C.y > 0)  // 第一象限
-        {
-            pointB = C + perpendicular;  // 右上
-        }
-        else if (C.x < 0 && C.y > 0)  // 第二象限
-        {
-            pointB = C + perpendicular;  // 左上
-        }
-        else if (C.x < 0 && C.y < 0)  // 第三象限
-        {
-            pointB = C - perpendicular;  // 左下
-        }
-        else if (C.x > 0 && C.y < 0)  // 第四象限
-        {
-            pointB = C - perpendicular;  // 右下
-        }
-
-        return pointB;
-    }
-
-
-
-    void AdjustPathForPolygon()
-    {
-        if (pathPoints.Count < 2) return;
-
-        Vector2 lastPoint = pathPoints[pathPoints.Count - 1];
-        Vector2 firstPoint = pathPoints[0];
-
-        Vector2 midPoint = (lastPoint + firstPoint) / 2;
-        pathPoints.Insert(1, midPoint);
+        pathPoints.Clear();
     }
 }

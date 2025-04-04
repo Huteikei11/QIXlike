@@ -39,11 +39,13 @@ public class MaskController : MonoBehaviour
 
     public void ApplyMask(PolygonCollider2D polyCollider)
     {
+        /*
         if (polyCollider == null || polyCollider.points == null || polyCollider.points.Length < 3)
         {
             Debug.LogError("PolygonCollider2D のポイントが3つ未満のため、マスク処理を実行できません！");
             return;
         }
+        */
 
         polygonColliders.Add(polyCollider);
 
