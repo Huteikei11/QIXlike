@@ -7,6 +7,7 @@ public class EnemyMover : MonoBehaviour
     public float cooldownDuration = 2.0f; // クールダウンの長さ（秒）
     public TextureBoundaryDetector textureBoundaryDetector;
     public PlayerMovementpix playerMovementpix;
+    public float turnChance = 0.1f; // 方向転換の確率（10%）
 
     private Vector2 direction;
     private bool enemyOnLineCooldown = false;
@@ -51,8 +52,13 @@ public class EnemyMover : MonoBehaviour
         }
         else
         {
-            // 90度時計回りに回転
-            direction = new Vector2(direction.y, -direction.x);
+            // たまに反対方向に転換（ランダムで確率に基づいて）
+            if (Random.Range(0f, 1f) < turnChance)
+            {
+                direction = -direction;
+            }
+                // 90度時計回りに回転
+                direction = new Vector2(direction.y, -direction.x);
         }
     }
 
