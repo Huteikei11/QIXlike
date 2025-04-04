@@ -176,8 +176,8 @@ public class BoundaryChecker : MonoBehaviour
     {
         // サイズと中心位置の指定（必要に応じて調整可能）
         Vector2 center = new Vector2(0f, -1f);
-        float width = 3f;
-        float height = 2f;
+        float width = 2f;
+        float height = 1f;
 
         // 四角形の頂点を時計回りで設定
         Vector2[] rectanglePoints = new Vector2[]

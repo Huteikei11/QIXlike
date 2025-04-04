@@ -235,6 +235,7 @@ public class PlayerMovementpix : MonoBehaviour
         if (isOutsideMyArea)
         {
             RecordPoint();//最終点
+            FixStraightLineToRectangle();//一直線対策
             CloseShape();//ちゃんと閉じる
             DebugPathPoints();//デバッグ
             GeneratePolygonCollider();
@@ -315,6 +316,7 @@ public class PlayerMovementpix : MonoBehaviour
 
     void GeneratePolygonCollider()
     {
+        
 
         GameObject newPoly = new GameObject("GeneratedPolygon");
         PolygonCollider2D polyCollider = newPoly.AddComponent<PolygonCollider2D>();
@@ -335,7 +337,47 @@ public class PlayerMovementpix : MonoBehaviour
 
             maskController.ApplyMask(polyCollider);
         }
+
+        Destroy(newPoly);
         pathPoints.Clear();
+    }
+
+    void FixStraightLineToRectangle()
+    {
+        if (pathPoints.Count < 2) return;
+
+        bool allXSame = true;
+        bool allYSame = true;
+
+        float firstX = pathPoints[0].x;
+        float firstY = pathPoints[0].y;
+
+        foreach (Vector2 point in pathPoints)
+        {
+            if (point.x != firstX) allXSame = false;
+            if (point.y != firstY) allYSame = false;
+        }
+
+        // すでに多角形になっているなら処理しない
+        if (!allXSame && !allYSame) return;
+
+        Vector2 firstPoint = pathPoints[0];
+        Vector2 lastPoint = pathPoints[pathPoints.Count - 1];
+
+        float offset = 0.02f; // 少しだけずらす距離（必要に応じて調整）
+
+        if (allXSame)
+        {
+            // xがすべて同じ：縦線 → 横方向に補助点を追加
+            pathPoints.Add(new Vector2(lastPoint.x + offset, lastPoint.y));
+            pathPoints.Add(new Vector2(firstPoint.x + offset, firstPoint.y));
+        }
+        else if (allYSame)
+        {
+            // yがすべて同じ：横線 → 縦方向に補助点を追加
+            pathPoints.Add(new Vector2(lastPoint.x, lastPoint.y + offset));
+            pathPoints.Add(new Vector2(firstPoint.x, firstPoint.y + offset));
+        }
     }
 
 
