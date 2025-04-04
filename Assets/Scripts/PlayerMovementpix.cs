@@ -28,7 +28,6 @@ public class PlayerMovementpix : MonoBehaviour
     // 接触しているオブジェクトを管理するリスト
     private List<Collider2D> currentColliders = new List<Collider2D>();
 
-    public bool allowSpace = true;
 
     public float threshold = 0.2f; // 判定に使う距離のしきい値
 
@@ -102,7 +101,7 @@ public class PlayerMovementpix : MonoBehaviour
             }
         }
         //スペースキーが押されているとき
-        if (Input.GetKey(KeyCode.Space) && allowSpace)
+        if (Input.GetKey(KeyCode.Space))
         {
             moveSpeed = moveSpeed_tmp;
             moveDirection = new Vector2(moveX, moveY).normalized;
@@ -120,7 +119,6 @@ public class PlayerMovementpix : MonoBehaviour
                 EnterArea(nextPosition2D);
                 boundarychecker.WarpToClosestBoundary();
                 moveDirection = Vector2.zero;
-                //allowSpace = false;
             }
             //外にいるときに一
             if (!boundarychecker.isBoundary && IsPointOnLine(nextPosition2D) && (new Vector2(moveX, moveY) != Vector2.zero))
@@ -146,7 +144,6 @@ public class PlayerMovementpix : MonoBehaviour
                 transform.position = firstPoint;
             }
             //pathPoints.Clear();
-            allowSpace = true;
         }
     }
 
@@ -231,7 +228,6 @@ public class PlayerMovementpix : MonoBehaviour
 
     void EnterArea(Vector2 next)
     {
-        allowSpace = true;
         Debug.Log($"[記録点数]: {pathPoints.Count}");
         Debug.Log("領域に戻りました");
         StopPlayer();
