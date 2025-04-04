@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovementpix : MonoBehaviour
 {
+    public int life = 12;
     public float moveSpeed = 5f;
     private float moveSpeed_tmp = 5f;
     private Vector2 moveDirection;
@@ -128,24 +129,30 @@ public class PlayerMovementpix : MonoBehaviour
                 //最初の点に戻る
                 Vector2 firstPoint = pathPoints[0];
                 transform.position = firstPoint;
-                //pathPoints.Clear();
+                StartCoroutine(ClearPathPointsNextFrame());
             }
 
             // LineRendererで経路を描画
             lineRenderer.positionCount = pathPoints.Count;
             lineRenderer.SetPositions(ConvertToVector3Array(pathPoints));
-
         }
-        if (Input.GetKeyUp(KeyCode.Space))
+        else
         {
-            if (!boundarychecker.isBoundary)
+            if (!boundarychecker.isBoundary&&pathPoints.Count >= 2)
             {
+                Debug.Log("スペースを離しました");
                 //最初の点に戻る
                 Vector2 firstPoint = pathPoints[0];
                 transform.position = firstPoint;
+                pathPoints.Clear();
+
+                // LineRendererで経路を描画
+                lineRenderer.positionCount = pathPoints.Count;
+                lineRenderer.SetPositions(ConvertToVector3Array(pathPoints));
             }
-            //pathPoints.Clear();
+            
         }
+        
     }
 
     void MovePlayer()
@@ -269,7 +276,7 @@ public class PlayerMovementpix : MonoBehaviour
         int count = lineRenderer.positionCount;
 
         // 最新のセグメントは除外するため、count - 1 までループ
-        for (int i = 0; i < count - 100; i++)
+        for (int i = 0; i < count - 10; i++)
         {
             Vector2 lineStart = lineRenderer.GetPosition(i);
             Vector2 lineEnd = lineRenderer.GetPosition(i + 1);
@@ -281,6 +288,39 @@ public class PlayerMovementpix : MonoBehaviour
         }
         return false;
     }
+
+    public bool IsEnemyOnLine(Vector2 point)
+    {
+        int count = lineRenderer.positionCount;
+
+        // 最新のセグメントは除外しない
+        for (int i = 0; i < count-1; i++)
+        {
+            Vector2 lineStart = lineRenderer.GetPosition(i);
+            Vector2 lineEnd = lineRenderer.GetPosition(i + 1);
+
+            if (IsPointNearLineSegment(lineStart, lineEnd, point))
+            {
+                DeathPlayer();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void DeathPlayer()
+    {
+        life -= 1;
+        if (!boundarychecker.isBoundary)
+        {
+            //最初の点に戻る
+            Vector2 firstPoint = pathPoints[0];
+            transform.position = firstPoint;
+            pathPoints.Clear();
+
+        }
+    }
+
 
     bool IsPointNearLineSegment(Vector2 lineStart, Vector2 lineEnd, Vector2 point)
     {
@@ -340,6 +380,7 @@ public class PlayerMovementpix : MonoBehaviour
 
         Destroy(newPoly);
         pathPoints.Clear();
+        StartCoroutine(CheckAllEnemies());
     }
 
     void FixStraightLineToRectangle()
@@ -380,7 +421,22 @@ public class PlayerMovementpix : MonoBehaviour
         }
     }
 
+    IEnumerator CheckAllEnemies()
+    {
+        yield return null; // 1フレーム待機
+        // Enemyタグを持つ全てのオブジェクトを取得
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
+        // 各敵オブジェクトのCheckAreaを呼び出し
+        foreach (GameObject enemy in enemies)
+        {
+            EnemyMover enemyMover = enemy.GetComponent<EnemyMover>();
+            if (enemyMover != null)
+            {
+                enemyMover.CheckArea();
+            }
+        }
+    }
 
 
 }
