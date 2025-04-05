@@ -16,6 +16,8 @@ public class PlayerMovementpix : MonoBehaviour
     private bool isOutsideMyArea = false;
     private List<Vector2> pathPoints = new List<Vector2>();
     private Vector2 lastDirection;
+    private Vector2 firstPoint;
+    private bool isOut;
 
     public float MaxY;
     public float MinY;
@@ -108,12 +110,18 @@ public class PlayerMovementpix : MonoBehaviour
             moveSpeed = moveSpeed_tmp;
             moveDirection = new Vector2(moveX, moveY).normalized;
 
-            //領域内から領域外にでる
-            if (boundarychecker.isBoundary && !textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1))))
+            if (boundarychecker.isBoundary && textureboundarydetector.IsInTransparentArea(nextPosition2D)&&!isOut)
             {
-                //Vector2 prePosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * (-1*moveSpeed) * Time.fixedDeltaTime;
-                Vector3 prePosition2D = transform.position; // 逆方向に戻さない
+                moveDirection = Vector2.zero;
+            }
+
+            //領域内から領域外にでる
+            if (boundarychecker.isBoundary && !textureboundarydetector.IsOnBoundary(boundarychecker.WorldToPixel(new Vector3(nextPosition2D.x, nextPosition2D.y, 1)))&& !textureboundarydetector.IsInTransparentArea(nextPosition2D))
+            {
+                Vector2 prePosition2D = (Vector2)transform.position + new Vector2(moveX, moveY) * (-1*moveSpeed) * Time.fixedDeltaTime*5;
+                //Vector3 prePosition2D = transform.position; // 逆方向に戻さない
                 ExitArea(prePosition2D);
+                isOut = true;
             }
             //領域外から領域内にもどる
             else if (!boundarychecker.isBoundary && textureboundarydetector.IsInTransparentArea(nextPosition2D))
@@ -121,15 +129,21 @@ public class PlayerMovementpix : MonoBehaviour
                 EnterArea(nextPosition2D);
                 boundarychecker.WarpToClosestBoundary();
                 moveDirection = Vector2.zero;
+                isOut = false;
             }
             //外にいるときに一
             if (!boundarychecker.isBoundary && IsPointOnLine(nextPosition2D) && (new Vector2(moveX, moveY) != Vector2.zero))
             {
                 Debug.Log("同じ点を通りました");
                 //最初の点に戻る
-                Vector2 firstPoint = pathPoints[0];
+                if (pathPoints.Count > 0)
+                {
+                    firstPoint = pathPoints[0];
+                }
                 transform.position = firstPoint;
                 StartCoroutine(ClearPathPointsNextFrame());
+                isOut = false;
+                boundarychecker.CheckMoveBoundary();//境界内に戻ったか確認
             }
 
             // LineRendererで経路を描画
@@ -149,6 +163,8 @@ public class PlayerMovementpix : MonoBehaviour
                 // LineRendererで経路を描画
                 lineRenderer.positionCount = pathPoints.Count;
                 lineRenderer.SetPositions(ConvertToVector3Array(pathPoints));
+                isOut = false;
+                boundarychecker.CheckMoveBoundary();//境界内に戻ったか確認
             }
             
         }
@@ -241,7 +257,8 @@ public class PlayerMovementpix : MonoBehaviour
         StopPlayer();
         if (isOutsideMyArea)
         {
-            RecordPoint();//最終点
+            pathPoints.Add(next);
+            //RecordPoint();//最終点
             FixStraightLineToRectangle();//一直線対策
             CloseShape();//ちゃんと閉じる
             DebugPathPoints();//デバッグ
@@ -262,8 +279,8 @@ public class PlayerMovementpix : MonoBehaviour
     void ExitArea(Vector3 pre)
     {
         //pathPoints.Clear();
-        pathPoints.Add(pre); // 直前の点（領域内の出口点）
         RecordPoint(); // 出た直後の点
+        pathPoints.Add(pre); // 直前の点（領域内の出口点）
         Debug.Log("領域から出ました");
         isOutsideMyArea = true;
         //pathPoints.Add(pre); // 最初の点を記録

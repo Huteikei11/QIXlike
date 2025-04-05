@@ -46,7 +46,7 @@ public class TextureBoundaryDetector : MonoBehaviour
         }
 
         // **‹«ŠE‚ÌŒú‚³‚ð 4 ƒsƒNƒZƒ‹‚ÉŠg’£**
-        for (int thickness = 2; thickness <= 4; thickness++)
+        for (int thickness = 2; thickness <= 3; thickness++)
         {
             HashSet<Vector2Int> newBoundary = new HashSet<Vector2Int>();
             foreach (Vector2Int pos in tempBoundary)

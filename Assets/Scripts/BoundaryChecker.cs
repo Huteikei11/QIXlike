@@ -63,6 +63,14 @@ public class BoundaryChecker : MonoBehaviour
         }
     }
 
+    public void CheckMoveBoundary()
+    {
+        if (!isBoundary)
+        {
+            SetPlayerInsideBoundary();
+        }
+    }
+
     void SetPlayerInsideBoundary()
     {
         Vector2 textureCenter = new Vector2(boundaryDetector.sourceTexture.width / 2, boundaryDetector.sourceTexture.height / 2);
