@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class ConfigManager : MonoBehaviour
 {
+    public SaveManager saveManager; // SaveManagerの参照
+
     public List<Image> volumeButtons; // VolumeボタンのImageコンポーネントリスト (0~9)
     public Sprite volumeOnSprite; // VolumeボタンがOnのときの画像
     public Sprite volumeOffSprite; // VolumeボタンがOffのときの画像
@@ -20,23 +22,61 @@ public class ConfigManager : MonoBehaviour
     public Sprite muteOnSprite; // MuteがOnのときの画像
     public Sprite muteOffSprite; // MuteがOffのときの画像
 
-    public int difficult = 0; // 初期難易度 (0: Easy, 1: Normal, 2: Hard)
-    public bool isCheatMode = false; // 初期CheatMode状態
-    public bool isMute = false; // 初期Mute状態
-    public int volume = 5; // 初期Volume値 (0~9)
+    private int difficult = 0; // 初期難易度 (0: Easy, 1: Normal, 2: Hard)
+    private bool isCheatMode = false; // 初期CheatMode状態
+    private bool isMute = false; // 初期Mute状態
+    private int volume = 5; // 初期Volume値 (0~9)
 
     void Start()
     {
+        // 初期化時にセーブデータをロード
+        Debug.Log("ConfigManager Start: セーブデータをロードします。");
+        LoadConfigFromSave();
+
         UpdateDifficultButtons();
         UpdateCheatModeButtons();
         UpdateMuteButton();
         UpdateVolumeButtons();
     }
 
+    void OnEnable()
+    {
+        Debug.Log("ConfigManager OnEnable: セーブデータをロードします。");
+        // アクティブ化時にセーブデータをロード
+        LoadConfigFromSave();
+
+        UpdateDifficultButtons();
+        UpdateCheatModeButtons();
+        UpdateMuteButton();
+        UpdateVolumeButtons();
+    }
+
+    private void LoadConfigFromSave()
+    {
+        if (saveManager != null)
+        {
+            var saveData = saveManager.GetSaveData();
+            difficult = saveData.difficult;
+            isCheatMode = saveData.cheatMode;
+            isMute = saveData.mute;
+            volume = saveData.volume;
+        }
+        else
+        {
+            Debug.LogError("SaveManagerが設定されていません。");
+        }
+    }
+
     public void SetDifficult(int value)
     {
         difficult = Mathf.Clamp(value, 0, 2); // 0~2の範囲に制限
         UpdateDifficultButtons();
+
+        // SaveManagerに保存
+        if (saveManager != null)
+        {
+            saveManager.SetDifficult(difficult);
+        }
     }
 
     private void UpdateDifficultButtons()
@@ -50,10 +90,16 @@ public class ConfigManager : MonoBehaviour
         }
     }
 
-    public void ToggleCheatMode(bool set)
+    public void ToggleCheatMode()
     {
-        isCheatMode = set;
+        isCheatMode = !isCheatMode;
         UpdateCheatModeButtons();
+
+        // SaveManagerに保存
+        if (saveManager != null)
+        {
+            saveManager.SetCheatMode(isCheatMode);
+        }
     }
 
     private void UpdateCheatModeButtons()
@@ -72,6 +118,12 @@ public class ConfigManager : MonoBehaviour
     {
         isMute = !isMute;
         UpdateMuteButton();
+
+        // SaveManagerに保存
+        if (saveManager != null)
+        {
+            saveManager.SetMute(isMute);
+        }
     }
 
     private void UpdateMuteButton()
@@ -86,6 +138,12 @@ public class ConfigManager : MonoBehaviour
     {
         volume = Mathf.Clamp(value, 0, 9); // 0~9の範囲に制限
         UpdateVolumeButtons();
+
+        // SaveManagerに保存
+        if (saveManager != null)
+        {
+            saveManager.SetVolume(volume);
+        }
     }
 
     private void UpdateVolumeButtons()
