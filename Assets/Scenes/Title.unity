@@ -1711,7 +1711,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &519750755
 Transform:
   m_ObjectHideFlags: 0
@@ -2486,7 +2486,7 @@ GameObject:
   - component: {fileID: 961108773}
   - component: {fileID: 961108772}
   m_Layer: 5
-  m_Name: "\u5171\u901A\u30DC\u30BF\u30F3_canvas (1)"
+  m_Name: "\u30B3\u30F3\u30D5\u30A3\u30B0\u30DC\u30BF\u30F3Canvas"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4701,8 +4701,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1428777473}
         m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
-        m_MethodName: SelectMode
-        m_Mode: 3
+        m_MethodName: ConfilmButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

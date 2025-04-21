@@ -5,8 +5,8 @@
 			"stage" : [
 				false,false,false,false,false,false,false
 			],
-			"volume" : 8,
-			"mute" : false,
+			"volume" : 0,
+			"mute" : true,
 			"difficult" : 0,
 			"cheatMode" : false
 		}

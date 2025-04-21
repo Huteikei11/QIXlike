@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
+    private static SaveManager instance;
+
     private const string SaveKey = "GameSaveData"; // セーブデータのキー
 
-    // セーブデータ構造体
     [System.Serializable]
     public class SaveData
     {
@@ -18,13 +19,37 @@ public class SaveManager : MonoBehaviour
 
     private SaveData saveData = new SaveData();
 
+    public static SaveManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                Debug.LogError("SaveManagerがシーンに存在しません。");
+            }
+            return instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject); // シーン間でオブジェクトを破棄しない
+        }
+        else
+        {
+            Destroy(gameObject); // 重複するインスタンスを破棄
+        }
+    }
+
     public void Start()
     {
-        // 初期化時にセーブデータをロード
         Debug.Log("セーブデータをロードします。");
         LoadData();
     }
-    // セーブデータをロード
+
     public void LoadData()
     {
         try
@@ -45,20 +70,23 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // セーブデータを保存
     public void SaveGameData()
     {
         ES3.Save(SaveKey, saveData);
         Debug.Log("セーブデータを保存しました。");
     }
 
-    // ステージクリア情報を更新
+    public SaveData GetSaveData()
+    {
+        return saveData;
+    }
+
     public void SetStageClear(int stageIndex, bool isClear)
     {
         if (stageIndex >= 0 && stageIndex < saveData.stage.Length)
         {
             saveData.stage[stageIndex] = isClear;
-            SaveGameData(); // 更新後に保存
+            SaveGameData();
         }
         else
         {
@@ -66,37 +94,27 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // 音量を設定
     public void SetVolume(int volume)
     {
-        saveData.volume = Mathf.Clamp(volume, 0, 9); // 0~9の範囲に制限
-        SaveGameData(); // 更新後に保存
+        saveData.volume = Mathf.Clamp(volume, 0, 9);
+        SaveGameData();
     }
 
-    // ミュート状態を設定
     public void SetMute(bool isMute)
     {
         saveData.mute = isMute;
-        SaveGameData(); // 更新後に保存
+        SaveGameData();
     }
 
-    // 難易度を設定
     public void SetDifficult(int difficult)
     {
-        saveData.difficult = Mathf.Clamp(difficult, 0, 2); // 0~2の範囲に制限
-        SaveGameData(); // 更新後に保存
+        saveData.difficult = Mathf.Clamp(difficult, 0, 2);
+        SaveGameData();
     }
 
-    // チートモードを設定
     public void SetCheatMode(bool isCheatMode)
     {
         saveData.cheatMode = isCheatMode;
-        SaveGameData(); // 更新後に保存
-    }
-
-    // セーブデータを取得 (必要に応じて外部からアクセス可能)
-    public SaveData GetSaveData()
-    {
-        return saveData;
+        SaveGameData();
     }
 }

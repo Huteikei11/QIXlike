@@ -90,9 +90,9 @@ public class ConfigManager : MonoBehaviour
         }
     }
 
-    public void ToggleCheatMode()
+    public void ToggleCheatMode(bool set)
     {
-        isCheatMode = !isCheatMode;
+        isCheatMode = set;
         UpdateCheatModeButtons();
 
         // SaveManager‚É•Û‘¶
