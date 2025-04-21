@@ -38,8 +38,19 @@ public class TitleManager : MonoBehaviour
             SelectMode(1); // ステージセレクト画面に移動
         }
     }
+    public void ConfilmButton() // Gameモードのとき
+    {
+        if(titleMode == 1) // ステージセレクト画面
+        {
+            // キャラ番号を取得して、ゲームを開始する
+        }
+        else if (titleMode == 2) // CG画面
+        {
+            // Saveからそのキャラをクリアしているか確認
+        }
+    }
 
-    public void ModeButton()//ボタン
+    public void ModeButton()//Game/CGボタン
     {
         if (titleMode == 1)
         {
