@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BoundaryChecker : MonoBehaviour
@@ -73,26 +74,59 @@ public class BoundaryChecker : MonoBehaviour
 
     void SetPlayerInsideBoundary()
     {
-        Vector2 textureCenter = new Vector2(boundaryDetector.sourceTexture.width / 2, boundaryDetector.sourceTexture.height / 2);
-        Vector2Int pixelPos = new Vector2Int((int)textureCenter.x, (int)textureCenter.y);
+        Vector2Int textureCenter = new Vector2Int(boundaryDetector.sourceTexture.width / 2, boundaryDetector.sourceTexture.height / 2);
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
-        // 境界内になるまで調整
-        while (!boundaryDetector.IsOnBoundary(pixelPos))
+        queue.Enqueue(textureCenter);
+        visited.Add(textureCenter);
+
+        while (queue.Count > 0)
         {
-            pixelPos.x = Mathf.Clamp(pixelPos.x - 1, 0, boundaryDetector.sourceTexture.width - 1);
-            pixelPos.y = Mathf.Clamp(pixelPos.y - 1, 0, boundaryDetector.sourceTexture.height - 1);
+            Vector2Int current = queue.Dequeue();
 
-            // 万が一、完全に外に出た場合は強制終了
-            if (pixelPos.x == 0 && pixelPos.y == 0)
+            // 境界に到達した場合
+            if (boundaryDetector.IsOnBoundary(current))
             {
-                Debug.LogError("[BoundaryChecker] 境界が見つからないため、初期位置を設定できません。");
+                player.position = PixelToWorld(current);
+                Debug.Log("[BoundaryChecker] プレイヤーの初期位置を境界内に設定しました: " + player.position);
                 return;
+            }
+
+            // 周囲のピクセルを探索
+            foreach (Vector2Int neighbor in GetNeighbors(current, boundaryDetector.sourceTexture.width, boundaryDetector.sourceTexture.height))
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    queue.Enqueue(neighbor);
+                    visited.Add(neighbor);
+                }
             }
         }
 
-        // ワールド座標に変換してプレイヤーを移動
-        player.position = PixelToWorld(pixelPos);
-        Debug.Log("[BoundaryChecker] プレイヤーの初期位置を境界内に設定しました: " + player.position);
+        // 境界が見つからなかった場合
+        Debug.LogError("[BoundaryChecker] 境界が見つからないため、初期位置を設定できません。");
+    }
+
+    IEnumerable<Vector2Int> GetNeighbors(Vector2Int current, int width, int height)
+    {
+        // 上下左右の隣接ピクセルを返す
+        Vector2Int[] directions = new Vector2Int[]
+        {
+        new Vector2Int(0, 1),  // 上
+        new Vector2Int(0, -1), // 下
+        new Vector2Int(1, 0),  // 右
+        new Vector2Int(-1, 0)  // 左
+        };
+
+        foreach (Vector2Int dir in directions)
+        {
+            Vector2Int neighbor = current + dir;
+            if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0 && neighbor.y < height)
+            {
+                yield return neighbor;
+            }
+        }
     }
 
     public Vector2Int WorldToPixel(Vector3 worldPos)

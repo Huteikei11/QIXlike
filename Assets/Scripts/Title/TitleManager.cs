@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI; // UI操作に必要
 
 public class TitleManager : MonoBehaviour
@@ -43,6 +44,7 @@ public class TitleManager : MonoBehaviour
         if(titleMode == 1) // ステージセレクト画面
         {
             // キャラ番号を取得して、ゲームを開始する
+            GameStart(); // ゲームを開始するメソッドを呼び出す
         }
         else if (titleMode == 2) // CG画面
         {
@@ -119,6 +121,9 @@ public class TitleManager : MonoBehaviour
         chara = charaIndex; // キャラクターの選択状態を更新
         Debug.Log("キャラクターが選択されました: " + chara);
 
+        // SaveManager にキャラクター情報を保存
+        SaveManager.Instance.SetCharacter(chara);
+
         UpdateCharaImages(); // キャラクター画像の透明度を更新
     }
 
@@ -145,6 +150,7 @@ public class TitleManager : MonoBehaviour
     private void GameStart()
     {
         // charaをここで使用
+        SceneManager.LoadScene("Main");
         Debug.Log("ゲームを開始します。選択されたキャラクター: " + chara);
     }
 }

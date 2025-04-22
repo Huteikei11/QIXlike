@@ -15,6 +15,8 @@ public class SaveManager : MonoBehaviour
         public bool mute = false; // ミュート状態
         public int difficult = 0; // 難易度 (0: Easy, 1: Normal, 2: Hard)
         public bool cheatMode = false; // チートモード
+        public int chara = -1; // キャラクター情報 (初期値は未選択を示す -1)
+        public int level = 0; // ゲームの進捗度 (初期値は0)
     }
 
     private SaveData saveData = new SaveData();
@@ -25,7 +27,7 @@ public class SaveManager : MonoBehaviour
         {
             if (instance == null)
             {
-                Debug.LogError("SaveManagerがシーンに存在しません。");
+                Debug.Log("SaveManagerがシーンに存在しません。");
             }
             return instance;
         }
@@ -81,12 +83,14 @@ public class SaveManager : MonoBehaviour
         return saveData;
     }
 
+    // ステージクリア情報
     public void SetStageClear(int stageIndex, bool isClear)
     {
         if (stageIndex >= 0 && stageIndex < saveData.stage.Length)
         {
             saveData.stage[stageIndex] = isClear;
             SaveGameData();
+            Debug.Log($"ステージ {stageIndex} のクリア状態を設定: {isClear}");
         }
         else
         {
@@ -94,27 +98,101 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    public bool GetStageClear(int stageIndex)
+    {
+        if (stageIndex >= 0 && stageIndex < saveData.stage.Length)
+        {
+            Debug.Log($"ステージ {stageIndex} のクリア状態を取得: {saveData.stage[stageIndex]}");
+            return saveData.stage[stageIndex];
+        }
+        else
+        {
+            Debug.LogError("無効なステージインデックスです: " + stageIndex);
+            return false;
+        }
+    }
+
+    // 音量
     public void SetVolume(int volume)
     {
         saveData.volume = Mathf.Clamp(volume, 0, 9);
         SaveGameData();
+        Debug.Log($"音量を設定: {volume}");
     }
 
+    public int GetVolume()
+    {
+        Debug.Log($"音量を取得: {saveData.volume}");
+        return saveData.volume;
+    }
+
+    // ミュート状態
     public void SetMute(bool isMute)
     {
         saveData.mute = isMute;
         SaveGameData();
+        Debug.Log($"ミュート状態を設定: {isMute}");
     }
 
+    public bool GetMute()
+    {
+        Debug.Log($"ミュート状態を取得: {saveData.mute}");
+        return saveData.mute;
+    }
+
+    // 難易度
     public void SetDifficult(int difficult)
     {
-        saveData.difficult = Mathf.Clamp(difficult, 0, 2);
+        saveData.difficult = Mathf.Clamp(difficult, 0, 2); // 難易度を0~2の範囲に制限
         SaveGameData();
+        Debug.Log($"難易度を設定: {difficult}");
     }
 
+    public int GetDifficult()
+    {
+        Debug.Log($"難易度を取得: {saveData.difficult}");
+        return saveData.difficult;
+    }
+
+    // チートモード
     public void SetCheatMode(bool isCheatMode)
     {
         saveData.cheatMode = isCheatMode;
         SaveGameData();
+        Debug.Log($"チートモードを設定: {isCheatMode}");
+    }
+
+    public bool GetCheatMode()
+    {
+        Debug.Log($"チートモードを取得: {saveData.cheatMode}");
+        return saveData.cheatMode;
+    }
+
+    // キャラクター情報
+    public void SetCharacter(int characterIndex)
+    {
+        saveData.chara = characterIndex;
+        SaveGameData();
+        Debug.Log($"キャラクターを設定: {characterIndex}");
+    }
+
+    public int GetCharacter()
+    {
+        Debug.Log($"キャラクターを取得: {saveData.chara}");
+        return saveData.chara;
+    }
+
+    // レベル情報
+    public void SetLevel(int level)
+    {
+        saveData.level = level;
+        SaveGameData();
+        Debug.Log($"レベルを設定: {level}");
+    }
+
+    public int GetLevel()
+    {
+        Debug.Log($"レベルを取得: {saveData.level}");
+        return saveData.level;
     }
 }

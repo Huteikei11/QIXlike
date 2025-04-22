@@ -4,7 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class MaskController : MonoBehaviour
 {
-    public Texture2D sourceTexture;  // 元の画像
+    
+    private Texture2D sourceTexture;  // 元の画像
     private Texture2D maskTexture;   // マスク後の画像
     private List<PolygonCollider2D> polygonColliders = new List<PolygonCollider2D>();
     public TextureBoundaryDetector textureBoundaryDetector;
@@ -13,13 +14,13 @@ public class MaskController : MonoBehaviour
     private int width, height;
     public float alphaThreshold = 0.1f; // 不透明とみなすアルファ値の閾値
 
+
+
+
+
     void Start()
     {
-        if (sourceTexture == null)
-        {
-            Debug.LogError("sourceTexture が設定されていません！Inspector で設定してください。");
-            return;
-        }
+        sourceTexture = textureBoundaryDetector.sourceTexture;
         InitializeMask();
     }
 

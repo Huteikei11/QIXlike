@@ -1,16 +1,40 @@
 using UnityEngine;
 using System.Collections.Generic;
+using static MaskController;
 
 public class TextureBoundaryDetector : MonoBehaviour
 {
+    public List<CharacterTextureSet> characterTextures; // キャラクターごとの
     public Texture2D sourceTexture;
     private Texture2D processedTexture;
     private SpriteRenderer spriteRenderer;
 
     private HashSet<Vector2Int> boundaryPixels = new HashSet<Vector2Int>(); // 境界データ
 
+
+    [System.Serializable]
+    public class CharacterTextureSet
+    {
+        public string characterName; // キャラクター名 (任意)
+        public List<Texture2D> textures; // キャラクターに対応するテクスチャリスト
+    }
     void Awake()
     {
+        int charaIndex = 0; // デフォルト値
+        int levelIndex = 0; // デフォルト値
+
+        try
+        {
+            charaIndex = Mathf.Clamp(SaveManager.Instance.GetCharacter(), 0, characterTextures.Count - 1);
+            levelIndex = Mathf.Clamp(SaveManager.Instance.GetLevel(), 0, characterTextures[charaIndex].textures.Count - 1);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"SaveManagerがシーンに存在しないため、デフォルト値を使用します: {ex.Message}");
+        }
+
+        sourceTexture = characterTextures[charaIndex].textures[levelIndex];
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (sourceTexture != null)
         {

@@ -225,7 +225,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 476426457}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -259,7 +259,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 47c0328f44f7cf04d9d06c105930881d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9b4143f1698a60e4588717369b0c427e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -279,8 +279,8 @@ Transform:
   m_GameObject: {fileID: 476426457}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -1.776, y: 0.0000343, z: 0}
+  m_LocalScale: {x: 1.0666606, y: 1.0666606, z: 1.0666606}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -297,7 +297,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f89fd35941f1949868f7305aac7038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sourceTexture: {fileID: 2800000, guid: 47c0328f44f7cf04d9d06c105930881d, type: 3}
   textureBoundaryDetector: {fileID: 2024300374}
   alphaThreshold: 0.1
 --- !u!114 &476426461
@@ -763,7 +762,7 @@ GameObject:
   - component: {fileID: 1192631851}
   - component: {fileID: 1192631850}
   m_Layer: 0
-  m_Name: 25-2-08-02-02-32-50B
+  m_Name: "\u5F8C\u308D\u306ECG"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -852,7 +851,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1343572600
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1014,8 +1013,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 710287670}
   m_Father: {fileID: 0}
@@ -1344,6 +1343,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98318182b7f92b34b913b1884e227785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterTextures:
+  - characterName: "\u970A\u5922"
+    textures:
+    - {fileID: 2800000, guid: 9b4143f1698a60e4588717369b0c427e, type: 3}
+    - {fileID: 2800000, guid: ae035c9d5914f8b41b92ceff773f152d, type: 3}
   sourceTexture: {fileID: 2800000, guid: 47c0328f44f7cf04d9d06c105930881d, type: 3}
 --- !u!212 &2024300375
 SpriteRenderer:
@@ -1386,7 +1390,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 0ae2b74b1edd14bb18dd7b65ae916a54, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9b4143f1698a60e4588717369b0c427e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1406,8 +1410,8 @@ Transform:
   m_GameObject: {fileID: 2024300373}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -1.776, y: 0.0000343, z: 0}
+  m_LocalScale: {x: 1.0666606, y: 1.0666606, z: 1.0666606}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1418,6 +1422,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 476426459}
+  - {fileID: 2024300376}
   - {fileID: 1192631851}
   - {fileID: 1602482186}
   - {fileID: 754045616}
@@ -1426,5 +1431,4 @@ SceneRoots:
   - {fileID: 1122206672}
   - {fileID: 647616051}
   - {fileID: 1343572601}
-  - {fileID: 2024300376}
   - {fileID: 1762406067}
