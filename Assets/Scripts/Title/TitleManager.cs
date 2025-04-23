@@ -27,6 +27,7 @@ public class TitleManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        SaveManager.Instance.SetCharacter(-1);
         titleMode = 0; // 初期状態はタイトル画面
         ChangeView(titleMode); // 初期画面を設定
     }
@@ -41,15 +42,19 @@ public class TitleManager : MonoBehaviour
     }
     public void ConfilmButton() // Gameモードのとき
     {
-        if(titleMode == 1) // ステージセレクト画面
+        if (SaveManager.Instance.GetCharacter() != -1) // キャラが選択されていない場合
         {
-            // キャラ番号を取得して、ゲームを開始する
-            GameStart(); // ゲームを開始するメソッドを呼び出す
+            if (titleMode == 1) // ステージセレクト画面
+            {
+                // キャラ番号を取得して、ゲームを開始する
+                GameStart(); // ゲームを開始するメソッドを呼び出す
+            }
+            else if (titleMode == 2) // CG画面
+            {
+                // Saveからそのキャラをクリアしているか確認
+            }
         }
-        else if (titleMode == 2) // CG画面
-        {
-            // Saveからそのキャラをクリアしているか確認
-        }
+
     }
 
     public void ModeButton()//Game/CGボタン
