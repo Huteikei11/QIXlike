@@ -51,6 +51,7 @@ public class SaveManager : MonoBehaviour
     {
         Debug.Log("セーブデータをロードします。");
         LoadData();
+        LogSaveData(); // セーブデータの中身を出力
     }
 
     public void LoadData()
@@ -209,5 +210,18 @@ public class SaveManager : MonoBehaviour
     {
         Debug.Log($"レベルを取得: {saveData.level}");
         return saveData.level;
+    }
+
+    private void LogSaveData()
+    {
+        Debug.Log("セーブデータの内容:");
+        Debug.Log($"ステージクリア情報: {string.Join(", ", saveData.stage)}");
+        Debug.Log($"音量: {saveData.volume}");
+        Debug.Log($"ミュート状態: {saveData.mute}");
+        Debug.Log($"難易度: {saveData.difficult}");
+        Debug.Log($"チートモード: {saveData.cheatMode}");
+        Debug.Log($"キャラクター: {saveData.chara}");
+        Debug.Log($"レベル: {saveData.level}");
+        Debug.Log($"ライフ数: {saveData.lifeCount}");
     }
 }
