@@ -149,8 +149,23 @@ public class TitleManager : MonoBehaviour
 
     private void GameStart()
     {
-        // charaをここで使用
+        try
+        {
+            // SaveManagerのlevelとlifeを初期化
+            int level = 0;
+            int life = 10;
+
+            SaveManager.Instance.SetLevel(level);
+            SaveManager.Instance.SetLifeCount(life);
+
+            Debug.Log($"ゲームを開始します。選択されたキャラクター: {chara}, レベル: {level}, ライフ: {life}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($"SaveManagerからデータを取得できませんでした: {ex.Message}");
+        }
+        // シーンをロード
         SceneManager.LoadScene("Main");
-        Debug.Log("ゲームを開始します。選択されたキャラクター: " + chara);
     }
+
 }

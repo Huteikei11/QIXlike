@@ -6,6 +6,7 @@ public class EnemyMover : MonoBehaviour
     public float speed = 2.0f;
     public float cooldownDuration = 2.0f; // クールダウンの長さ（秒）
     public TextureBoundaryDetector textureBoundaryDetector;
+    public LifeManager lifeManager;
     public PlayerMovementpix playerMovementpix;
     public float turnChance = 0.1f; // 方向転換の確率（10%）
 
@@ -76,6 +77,7 @@ public class EnemyMover : MonoBehaviour
         if (textureBoundaryDetector.IsInTransparentArea(new Vector2(transform.position.x, transform.position.y)))
         {
             Debug.Log("やられたー");
+            lifeManager.AddLife(1); // ライフ増やす
             Destroy(this.gameObject);
         }
     }

@@ -31,7 +31,7 @@ public class BackCGView : MonoBehaviour
             Debug.LogWarning($"SaveManagerがシーンに存在しないため、デフォルト値を使用します: {ex.Message}");
         }
 
-        texture = characterTextures[charaIndex].textures[levelIndex];
+        texture = characterTextures[charaIndex].textures[levelIndex+1];//裏のCGなので+1
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));

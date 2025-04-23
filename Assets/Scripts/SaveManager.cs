@@ -17,6 +17,7 @@ public class SaveManager : MonoBehaviour
         public bool cheatMode = false; // チートモード
         public int chara = -1; // キャラクター情報 (初期値は未選択を示す -1)
         public int level = 0; // ゲームの進捗度 (初期値は0)
+        public int lifeCount = 3; // ライフ数 (初期値は3)
     }
 
     private SaveData saveData = new SaveData();
@@ -81,6 +82,20 @@ public class SaveManager : MonoBehaviour
     public SaveData GetSaveData()
     {
         return saveData;
+    }
+
+    // ライフ数
+    public void SetLifeCount(int lifeCount)
+    {
+        saveData.lifeCount = Mathf.Max(0, lifeCount); // ライフ数を0以上に制限
+        SaveGameData();
+        Debug.Log($"ライフ数を設定: {lifeCount}");
+    }
+
+    public int GetLifeCount()
+    {
+        Debug.Log($"ライフ数を取得: {saveData.lifeCount}");
+        return saveData.lifeCount;
     }
 
     // ステージクリア情報

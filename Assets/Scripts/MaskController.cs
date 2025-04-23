@@ -9,14 +9,11 @@ public class MaskController : MonoBehaviour
     private Texture2D maskTexture;   // マスク後の画像
     private List<PolygonCollider2D> polygonColliders = new List<PolygonCollider2D>();
     public TextureBoundaryDetector textureBoundaryDetector;
+    public CheckRation checkRation;
 
     private Color[] maskPixels;
     private int width, height;
     public float alphaThreshold = 0.1f; // 不透明とみなすアルファ値の閾値
-
-
-
-
 
     void Start()
     {
@@ -104,6 +101,8 @@ public class MaskController : MonoBehaviour
         //画像を置き換える
         textureBoundaryDetector.ReTexture(maskTexture);
 
+        //何パーセントか計算
+        checkRation.CalculateTransparencyRatio(maskTexture);
     }
 
     private bool IsPointInPolygon(Vector2 point, Vector2[] polygon)

@@ -10,7 +10,6 @@ public class BoundaryChecker : MonoBehaviour
     public  bool isBoundary;
     void Start()
     {
-
         maskController = FindObjectOfType<MaskController>(); // MaskControllerを取得
         boundaryDetector = FindObjectOfType<TextureBoundaryDetector>();
 
@@ -53,13 +52,13 @@ public class BoundaryChecker : MonoBehaviour
 
         if (boundaryDetector.IsOnBoundary(pixelPos))
         {
-            //Debug.Log("[BoundaryChecker] プレイヤーは境界部分にいる！ ピクセル座標: " + pixelPos);
+            Debug.Log("[BoundaryChecker] プレイヤーは境界部分にいる！ ピクセル座標: " + pixelPos);
             isBoundary = true;
 
         }
         else
         {
-            //Debug.Log("[BoundaryChecker] プレイヤーは境界部分にいない。");
+            Debug.Log("[BoundaryChecker] プレイヤーは境界部分にいない。");
             isBoundary = false;
         }
     }
@@ -68,7 +67,7 @@ public class BoundaryChecker : MonoBehaviour
     {
         if (!isBoundary)
         {
-            SetPlayerInsideBoundary();
+            WarpToClosestBoundary();// プレイヤーを最寄りの境界にワープ
         }
     }
 
@@ -216,8 +215,17 @@ public class BoundaryChecker : MonoBehaviour
 
     void CreateInitialRectangleCollider()
     {
-        // サイズと中心位置の指定（必要に応じて調整可能）
-        Vector2 center = new Vector2(0f, -1f);
+        // ランダムな範囲を指定（必要に応じて調整可能）
+        float minX = -9f, maxX = 6f;
+        float minY = -4f, maxY = 4f;
+
+        // ランダムな中心位置を生成
+        Vector2 center = new Vector2(
+            Random.Range(minX, maxX),
+            Random.Range(minY, maxY)
+        );
+
+        // サイズを指定（必要に応じて調整可能）
         float width = 2f;
         float height = 1f;
 
@@ -244,7 +252,9 @@ public class BoundaryChecker : MonoBehaviour
         {
             maskController.ApplyMask(polyCollider);
         }
+
         // デバッグログ
-        Debug.Log("初期の四角いPolygonCollider2Dを生成しました");
+        Debug.Log($"初期の四角いPolygonCollider2Dを生成しました。中心: {center}, 幅: {width}, 高さ: {height}");
     }
+
 }

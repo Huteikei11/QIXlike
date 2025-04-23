@@ -7,7 +7,7 @@ public class TextureBoundaryDetector : MonoBehaviour
     public List<CharacterTextureSet> characterTextures; // キャラクターごとの
     public Texture2D sourceTexture;
     private Texture2D processedTexture;
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
 
     private HashSet<Vector2Int> boundaryPixels = new HashSet<Vector2Int>(); // 境界データ
 
@@ -25,23 +25,49 @@ public class TextureBoundaryDetector : MonoBehaviour
 
         try
         {
-            charaIndex = Mathf.Clamp(SaveManager.Instance.GetCharacter(), 0, characterTextures.Count - 1);
-            levelIndex = Mathf.Clamp(SaveManager.Instance.GetLevel(), 0, characterTextures[charaIndex].textures.Count - 1);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogWarning($"SaveManagerがシーンに存在しないため、デフォルト値を使用します: {ex.Message}");
-        }
+            // SaveManager.Instance が null でないか確認
+            if (SaveManager.Instance != null)
+            {
+                charaIndex = Mathf.Clamp(SaveManager.Instance.GetCharacter(), 0, characterTextures.Count - 1);
+                levelIndex = Mathf.Clamp(SaveManager.Instance.GetLevel(), 0, characterTextures[charaIndex].textures.Count - 1);
+            }
+            else
+            {
+                Debug.LogWarning("[TextureBoundaryDetector] SaveManager.Instance が null です。デフォルト値を使用します。");
+            }
 
-        sourceTexture = characterTextures[charaIndex].textures[levelIndex];
+            // characterTextures の存在確認
+            if (characterTextures == null || characterTextures.Count == 0)
+            {
+                Debug.LogError("[TextureBoundaryDetector] characterTextures が設定されていません。");
+                return;
+            }
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (sourceTexture != null)
-        {
+            // textures の存在確認
+            if (characterTextures[charaIndex].textures == null || characterTextures[charaIndex].textures.Count == 0)
+            {
+                Debug.LogError($"[TextureBoundaryDetector] characterTextures[{charaIndex}].textures が設定されていません。");
+                return;
+            }
+
+            // sourceTexture を設定
+            sourceTexture = characterTextures[charaIndex].textures[levelIndex];
+            if (sourceTexture == null)
+            {
+                Debug.LogError($"[TextureBoundaryDetector] sourceTexture が null です。characterTextures[{charaIndex}].textures[{levelIndex}] を確認してください。");
+                return;
+            }
+
+            // テクスチャの処理
             processedTexture = GenerateBoundaryTexture(sourceTexture);
             ApplyTexture(processedTexture);
         }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TextureBoundaryDetector] エラーが発生しました: {ex.Message}");
+        }
     }
+
 
     Texture2D GenerateBoundaryTexture(Texture2D texture)
     {

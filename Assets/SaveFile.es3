@@ -5,12 +5,13 @@
 			"stage" : [
 				false,false,false,false,false,false,false
 			],
-			"volume" : 0,
-			"mute" : true,
-			"difficult" : 0,
-			"cheatMode" : false,
+			"volume" : 1,
+			"mute" : false,
+			"difficult" : 1,
+			"cheatMode" : true,
 			"chara" : 2,
-			"level" : 0
+			"level" : 1,
+			"lifeCount" : 10
 		}
 	}
 }

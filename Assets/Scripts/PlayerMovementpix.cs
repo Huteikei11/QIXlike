@@ -27,6 +27,7 @@ public class PlayerMovementpix : MonoBehaviour
     public LineRenderer lineRenderer;  // LineRenderer
     public BoundaryChecker boundarychecker;
     public TextureBoundaryDetector textureboundarydetector;
+    public LifeManager lifemanager;
 
     // 接触しているオブジェクトを管理するリスト
     private List<Collider2D> currentColliders = new List<Collider2D>();
@@ -268,6 +269,8 @@ public class PlayerMovementpix : MonoBehaviour
         Debug.Log($"[記録点数]: {pathPoints.Count}");
         // Coroutine で次のフレームにクリア
         //StartCoroutine(ClearPathPointsNextFrame());
+
+
     }
 
     IEnumerator ClearPathPointsNextFrame()
@@ -328,6 +331,7 @@ public class PlayerMovementpix : MonoBehaviour
     public void DeathPlayer()
     {
         life -= 1;
+        lifemanager.AddLife(-1);
         if (!boundarychecker.isBoundary)
         {
             //最初の点に戻る
@@ -385,7 +389,7 @@ public class PlayerMovementpix : MonoBehaviour
         Debug.Log($"生成された PolygonCollider2D の点の数: {polyCollider.points.Length}");
         foreach (Vector2 point in polyCollider.points)
         {
-            Debug.Log($"点: {point}");
+            //Debug.Log($"点: {point}");
         }
 
         // **マスク処理を適用**
