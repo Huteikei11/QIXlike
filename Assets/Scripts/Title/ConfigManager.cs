@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 public class ConfigManager : MonoBehaviour
 {
-    public SaveManager saveManager; // SaveManagerの参照
-
     public List<Image> volumeButtons; // VolumeボタンのImageコンポーネントリスト (0~9)
     public Sprite volumeOnSprite; // VolumeボタンがOnのときの画像
     public Sprite volumeOffSprite; // VolumeボタンがOffのときの画像
@@ -53,6 +51,7 @@ public class ConfigManager : MonoBehaviour
 
     private void LoadConfigFromSave()
     {
+        var saveManager = SaveManager.Instance; // シングルトンから取得
         if (saveManager != null)
         {
             var saveData = saveManager.GetSaveData();
@@ -63,7 +62,7 @@ public class ConfigManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("SaveManagerが設定されていません。");
+            Debug.LogError("SaveManagerのインスタンスが取得できません。");
         }
     }
 
@@ -73,6 +72,7 @@ public class ConfigManager : MonoBehaviour
         UpdateDifficultButtons();
 
         // SaveManagerに保存
+        var saveManager = SaveManager.Instance;
         if (saveManager != null)
         {
             saveManager.SetDifficult(difficult);
@@ -96,6 +96,7 @@ public class ConfigManager : MonoBehaviour
         UpdateCheatModeButtons();
 
         // SaveManagerに保存
+        var saveManager = SaveManager.Instance;
         if (saveManager != null)
         {
             saveManager.SetCheatMode(isCheatMode);
@@ -120,6 +121,7 @@ public class ConfigManager : MonoBehaviour
         UpdateMuteButton();
 
         // SaveManagerに保存
+        var saveManager = SaveManager.Instance;
         if (saveManager != null)
         {
             saveManager.SetMute(isMute);
@@ -140,6 +142,7 @@ public class ConfigManager : MonoBehaviour
         UpdateVolumeButtons();
 
         // SaveManagerに保存
+        var saveManager = SaveManager.Instance;
         if (saveManager != null)
         {
             saveManager.SetVolume(volume);

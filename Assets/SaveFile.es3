@@ -3,14 +3,14 @@
 		"__type" : "SaveManager+SaveData,Assembly-CSharp",
 		"value" : {
 			"stage" : [
-				false,false,false,false,false,false,false
+				false,false,true,false,true,false,false
 			],
-			"volume" : 5,
+			"volume" : 8,
 			"mute" : false,
 			"difficult" : 0,
-			"cheatMode" : false,
-			"chara" : 1,
-			"level" : 0,
+			"cheatMode" : true,
+			"chara" : -1,
+			"level" : 3,
 			"lifeCount" : 10
 		}
 	}

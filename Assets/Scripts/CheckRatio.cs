@@ -11,9 +11,16 @@ public class CheckRation : MonoBehaviour
     public float ratio;
     public TextMeshProUGUI areaRatio;
     public TextMeshProUGUI stageClearText; // STAGE CLEAR用のTextMeshPro
+    public TextMeshProUGUI gameClearText; // GAME CLEAR用のTextMeshPro
     public List<SpriteRenderer> spriteRenderersToFade; // フェードアウトさせるSpriteRendererのリスト
     public CanvasGroup transitionCanvasGroup; // トランジション用のCanvasGroup
     public float clearRatio = 0.6f; // クリア条件の比率
+    private int level;
+    private int chara;
+    private int life;
+    public bool Isfinal;
+
+    public TextureBoundaryDetector textureBoundaryDetector;
 
     public float CalculateTransparencyRatio(Texture2D texture)
     {
@@ -59,17 +66,56 @@ public class CheckRation : MonoBehaviour
 
     private void CheckClear()
     {
-        if (ratio > clearRatio)
+        if (ratio >= clearRatio)
         {
             Debug.Log("クリア条件を満たしました！");
-            StartCoroutine(StageClearSequence());
+            CheckLastStage();
         }
+    }
+
+    private void CheckLastStage()
+    {
+        try
+        {
+            // SaveManagerからlevelとlifeを取得
+            level = SaveManager.Instance.GetLevel();
+            chara = SaveManager.Instance.GetCharacter();
+
+            int pixcount =GetTexturesCountForCurrentCharacter(chara); // キャラクターのテクスチャ数を取得
+
+            Isfinal = (level >= pixcount - 2);//クリア処理
+            // 枚数,ステージ数の-1,0数えの-1
+            StartCoroutine(StageClearSequence());// ステージクリアシーケンスを開始
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"SaveManagerからデータを取得できませんでした: {ex.Message}");
+            return; // 例外が発生した場合、ゲーム開始処理をスキップ
+        }
+    }
+
+    public int GetTexturesCountForCurrentCharacter(int chara)
+    {
+        if (textureBoundaryDetector == null)
+        {
+            Debug.LogError("TextureBoundaryDetectorが設定されていません。");
+            return 0;
+        }
+
+        if (textureBoundaryDetector.characterTextures == null || textureBoundaryDetector.characterTextures.Count <= chara)
+        {
+            Debug.LogError($"CharacterTexturesが設定されていないか、charaインデックス({chara})が範囲外です。");
+            return 0;
+        }
+
+        // charaインデックスに対応するtexturesの数を取得
+        int texturesCount = textureBoundaryDetector.characterTextures[chara].textures.Count;
+        Debug.Log($"キャラクター {chara} のtexturesの数: {texturesCount}");
+        return texturesCount;
     }
 
     private IEnumerator StageClearSequence()
     {
-
-
         // STAGE CLEARの文字を表示
         if (stageClearText != null)
         {
@@ -111,8 +157,16 @@ public class CheckRation : MonoBehaviour
         // キー入力待ち
         yield return new WaitUntil(() => Input.anyKeyDown);
 
-        // トランジション開始
-        yield return StartCoroutine(TransitionToNextScene());
+        if (Isfinal)//最終ステージ?
+        {
+            // トランジション開始
+            yield return StartCoroutine(TransitionToLastScene());
+        }
+        else
+        {
+            // トランジション開始
+            yield return StartCoroutine(TransitionToNextScene());
+        }
     }
 
     private IEnumerator FadeOutSprite(SpriteRenderer spriteRenderer)
@@ -134,7 +188,7 @@ public class CheckRation : MonoBehaviour
         }
     }
 
-    private IEnumerator TransitionToNextScene()
+    private IEnumerator TransitionToNextScene()//通常
     {
         if (transitionCanvasGroup != null)
         {
@@ -153,13 +207,51 @@ public class CheckRation : MonoBehaviour
         Debug.LogWarning("transitionCanvasGroupが設定されていません。");
         }
     }
-    private void ChangeScene()
+
+    private IEnumerator TransitionToLastScene()// 最終ステージ後
+    {
+        // 演出
+        // GAME CLEARの文字を表示
+        if (gameClearText != null)
+        {
+            gameClearText.gameObject.SetActive(true);
+            gameClearText.DOFade(1f, 0.5f); // フェードイン
+        }
+        else
+        {
+            Debug.LogWarning("stageClearTextが設定されていません。");
+        }
+
+        // 待機
+        yield return new WaitForSeconds(1f);
+
+        // キー入力待ち
+        yield return new WaitUntil(() => Input.anyKeyDown);
+
+        if (transitionCanvasGroup != null)
+        {
+            // 画面を徐々に暗くする
+            yield return transitionCanvasGroup.DOFade(1f, 1f).WaitForCompletion();
+
+            // シーン遷移
+            ToTitle();
+
+            // シーン遷移後、画面を徐々に明るくする
+            yield return transitionCanvasGroup.DOFade(0f, 1f).WaitForCompletion();
+        }
+        else
+        {
+            Debug.LogWarning("transitionCanvasGroupが設定されていません。");
+        }
+    }
+
+    private void ChangeScene()// 次のステージ
     {
         try
         {
             // SaveManagerからlevelとlifeを取得して初期化
-            int level = SaveManager.Instance.GetLevel();
-            int life = SaveManager.Instance.GetLifeCount();
+            level = SaveManager.Instance.GetLevel();
+            life = SaveManager.Instance.GetLifeCount();
 
             SaveManager.Instance.SetLevel(level+1);
             SaveManager.Instance.SetLifeCount(life);
@@ -174,6 +266,25 @@ public class CheckRation : MonoBehaviour
 
         // シーンをロード
         SceneManager.LoadScene("Main");
+    }
+
+    private void ToTitle()
+    {
+        // クリアしたステージを更新
+        try
+        {
+            // キャラに対応したステージをクリアにする
+            SaveManager.Instance.SetStageClear(chara,true);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"SaveManagerからデータを取得できませんでした: {ex.Message}");
+            return; // 例外が発生した場合、ゲーム開始処理をスキップ
+        }
+
+        // タイトルシーンに遷移
+        SceneManager.LoadScene("Title");
+        Debug.Log("タイトルシーンに遷移しました。");
     }
 
     private void HidePlayerAndEnemyObjects()
