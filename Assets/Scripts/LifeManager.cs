@@ -7,6 +7,7 @@ public class LifeManager : MonoBehaviour
 {
     public int lifeCount = 10;
     public TextMeshProUGUI lifeText;
+    public CheckRation checkRation;
 
     private void Start()
     {
@@ -16,6 +17,11 @@ public class LifeManager : MonoBehaviour
             if (SaveManager.Instance != null)
             {
                 lifeCount = SaveManager.Instance.GetLifeCount();
+                bool cheat = SaveManager.Instance.GetCheatMode();
+                if (cheat)
+                {
+                    lifeCount = 50; // チートモードが有効な場合、ライフを50に設定
+                }
             }
             else
             {
@@ -49,12 +55,22 @@ public class LifeManager : MonoBehaviour
         {
             Debug.LogError($"ライフのセーブ中にエラーが発生しました: {ex.Message}");
         }
-
+        CheckGameOver(lifeCount);
         return lifeCount;
     }
 
     public void UpdateLifeText()
     {
         lifeText.text = lifeCount.ToString();
+    }
+
+    public void CheckGameOver(int lifeCount)
+    {
+        if (lifeCount <= 0)
+        {
+            Debug.Log("ゲームオーバー");
+            // ゲームオーバー処理をここに追加
+            checkRation.GameOver(); // CheckRationクラスのGameOverメソッドを呼び出す
+        }
     }
 }

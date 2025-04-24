@@ -52,7 +52,7 @@ public class BoundaryChecker : MonoBehaviour
 
         if (boundaryDetector.IsOnBoundary(pixelPos))
         {
-            Debug.Log("[BoundaryChecker] プレイヤーは境界部分にいる！ ピクセル座標: " + pixelPos);
+            //Debug.Log("[BoundaryChecker] プレイヤーは境界部分にいる！ ピクセル座標: " + pixelPos);
             isBoundary = true;
 
         }

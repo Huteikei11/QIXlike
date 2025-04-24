@@ -56,10 +56,16 @@ public class EnemyMover : MonoBehaviour
             // たまに反対方向に転換（ランダムで確率に基づいて）
             if (Random.Range(0f, 1f) < turnChance)
             {
-                direction = -direction;
-            }
                 // 90度時計回りに回転
                 direction = new Vector2(direction.y, -direction.x);
+                Debug.Log("ランダム");
+            }
+            else
+            {
+                // 90度時計回りに回転
+                direction = new Vector2(-direction.y, direction.x);
+            }
+
         }
     }
 

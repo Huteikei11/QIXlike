@@ -21,6 +21,7 @@ public class CheckRation : MonoBehaviour
     public bool Isfinal;
 
     public TextureBoundaryDetector textureBoundaryDetector;
+    public TextMeshProUGUI gameoverText;
 
     public float CalculateTransparencyRatio(Texture2D texture)
     {
@@ -304,5 +305,37 @@ public class CheckRation : MonoBehaviour
         }
 
         Debug.Log("PlayerとEnemyのオブジェクトを非表示にしました。");
+    }
+
+    public void GameOver()
+    {
+        StartCoroutine(GameOverSequence());
+    }
+
+    private IEnumerator GameOverSequence()
+    {
+        // STAGE CLEARの文字を表示
+        if (gameoverText != null)
+        {
+            gameoverText.gameObject.SetActive(true);
+            gameoverText.DOFade(1f, 0.5f); // フェードイン
+        }
+        else
+        {
+            Debug.LogWarning("stageClearTextが設定されていません。");
+        }
+
+        // 2秒間待機
+        yield return new WaitForSeconds(1f);
+        // PlayerとEnemyのオブジェクトを非表示
+        HidePlayerAndEnemyObjects();
+
+        // 待機
+        yield return new WaitForSeconds(1f);
+
+        // キー入力待ち
+        yield return new WaitUntil(() => Input.anyKeyDown);
+
+        SceneManager.LoadScene("Title"); // タイトル
     }
 }

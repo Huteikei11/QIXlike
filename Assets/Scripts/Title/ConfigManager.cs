@@ -25,17 +25,7 @@ public class ConfigManager : MonoBehaviour
     private bool isMute = false; // 初期Mute状態
     private int volume = 5; // 初期Volume値 (0~9)
 
-    void Start()
-    {
-        // 初期化時にセーブデータをロード
-        Debug.Log("ConfigManager Start: セーブデータをロードします。");
-        LoadConfigFromSave();
 
-        UpdateDifficultButtons();
-        UpdateCheatModeButtons();
-        UpdateMuteButton();
-        UpdateVolumeButtons();
-    }
 
     void OnEnable()
     {

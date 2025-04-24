@@ -7,11 +7,11 @@
 			],
 			"volume" : 8,
 			"mute" : false,
-			"difficult" : 0,
-			"cheatMode" : true,
-			"chara" : 3,
-			"level" : 3,
-			"lifeCount" : 10
+			"difficult" : 1,
+			"cheatMode" : false,
+			"chara" : 2,
+			"level" : 0,
+			"lifeCount" : 6
 		}
 	}
 }

@@ -52,6 +52,10 @@ public class TitleManager : MonoBehaviour
             else if (titleMode == 2) // CG画面
             {
                 // Saveからそのキャラをクリアしているか確認
+                if (SaveManager.Instance.GetStageClear(chara))
+                {
+                    SceneManager.LoadScene("CG");
+                } 
             }
         }
 

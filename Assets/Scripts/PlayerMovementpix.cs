@@ -46,7 +46,6 @@ public class PlayerMovementpix : MonoBehaviour
         {
             Debug.LogError("MaskController がシーン内に見つかりません！");
         }
-
     }
 
     void FixedUpdate()
@@ -332,14 +331,12 @@ public class PlayerMovementpix : MonoBehaviour
     {
         life -= 1;
         lifemanager.AddLife(-1);
-        if (!boundarychecker.isBoundary)
-        {
-            //最初の点に戻る
-            Vector2 firstPoint = pathPoints[0];
-            transform.position = firstPoint;
-            pathPoints.Clear();
-
-        }
+        //最初の点に戻る
+        Vector2 firstPoint = pathPoints[0];
+        transform.position = firstPoint;
+        pathPoints.Clear();
+        //if (!boundarychecker.isBoundary)
+        boundarychecker.CheckMoveBoundary();//境界内に戻ったか確認
     }
 
 
