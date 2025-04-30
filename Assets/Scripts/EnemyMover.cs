@@ -8,6 +8,8 @@ public class EnemyMover : MonoBehaviour
     public TextureBoundaryDetector textureBoundaryDetector;
     public LifeManager lifeManager;
     public PlayerMovementpix playerMovementpix;
+    public SEController seController; // SEControllerを追加
+    public AudioClip bound; // 方向転換時のSEクリップ
     public float turnChance = 0.1f; // 方向転換の確率（10%）
 
     private Vector2 direction;
@@ -31,6 +33,7 @@ public class EnemyMover : MonoBehaviour
         {
             if (playerMovementpix.IsEnemyOnLine(nextPosition))
             {
+                seController.PlaySE(bound); // SEを再生
                 enemyOnLineCooldown = true;
                 cooldownTimer = cooldownDuration;
                 Debug.Log("Enemy touched line! Starting cooldown.");

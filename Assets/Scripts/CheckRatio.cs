@@ -22,6 +22,10 @@ public class CheckRation : MonoBehaviour
 
     public TextureBoundaryDetector textureBoundaryDetector;
     public TextMeshProUGUI gameoverText;
+    public SEController secontroller; // SEControllerのインスタンス
+    public AudioClip stageClearSE; // STAGE CLEARのSE
+    public AudioClip gameClearSE; // GAME CLEARのSE
+    public AudioClip gameoverSE; // GAME OVERのSE
 
     public float CalculateTransparencyRatio(Texture2D texture)
     {
@@ -117,6 +121,7 @@ public class CheckRation : MonoBehaviour
 
     private IEnumerator StageClearSequence()
     {
+        secontroller.PlaySE(stageClearSE); // STAGE CLEARのSEを再生
         // STAGE CLEARの文字を表示
         if (stageClearText != null)
         {
@@ -211,6 +216,7 @@ public class CheckRation : MonoBehaviour
 
     private IEnumerator TransitionToLastScene()// 最終ステージ後
     {
+        secontroller.PlaySE(gameClearSE); // GAME CLEARのSEを再生
         // 演出
         // GAME CLEARの文字を表示
         if (gameClearText != null)
@@ -288,6 +294,12 @@ public class CheckRation : MonoBehaviour
         Debug.Log("タイトルシーンに遷移しました。");
     }
 
+    public void ReturnTitle()
+    {
+        // タイトルシーンに遷移
+        SceneManager.LoadScene("Title");
+    }
+
     private void HidePlayerAndEnemyObjects()
     {
         // Playerタグのオブジェクトを非表示
@@ -314,6 +326,7 @@ public class CheckRation : MonoBehaviour
 
     private IEnumerator GameOverSequence()
     {
+        secontroller.PlaySE(gameoverSE); // GAME OVERのSEを再生
         // STAGE CLEARの文字を表示
         if (gameoverText != null)
         {

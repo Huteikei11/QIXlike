@@ -9,9 +9,9 @@
 			"mute" : false,
 			"difficult" : 1,
 			"cheatMode" : false,
-			"chara" : 2,
+			"chara" : -1,
 			"level" : 0,
-			"lifeCount" : 6
+			"lifeCount" : 8
 		}
 	}
 }

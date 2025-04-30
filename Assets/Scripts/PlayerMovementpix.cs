@@ -17,7 +17,7 @@ public class PlayerMovementpix : MonoBehaviour
     private List<Vector2> pathPoints = new List<Vector2>();
     private Vector2 lastDirection;
     private Vector2 firstPoint;
-    private bool isOut;
+    public bool isOut;
 
     public float MaxY;
     public float MinY;
@@ -28,6 +28,8 @@ public class PlayerMovementpix : MonoBehaviour
     public BoundaryChecker boundarychecker;
     public TextureBoundaryDetector textureboundarydetector;
     public LifeManager lifemanager;
+    public SEController secontroller;
+    public AudioClip death;
 
     // 接触しているオブジェクトを管理するリスト
     private List<Collider2D> currentColliders = new List<Collider2D>();
@@ -329,6 +331,7 @@ public class PlayerMovementpix : MonoBehaviour
 
     public void DeathPlayer()
     {
+        secontroller.PlaySE(death);
         life -= 1;
         lifemanager.AddLife(-1);
         //最初の点に戻る

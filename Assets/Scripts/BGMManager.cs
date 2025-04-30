@@ -81,10 +81,4 @@ public class BGMManager : MonoBehaviour
 
         Debug.Log($"Audio設定を更新: Mute={isMute}, Volume={audioSource.volume}");
     }
-
-    private void Update()
-    {
-        // 毎フレームミュートと音量をチェックして更新
-        UpdateAudioSettings();
-    }
 }

@@ -46,8 +46,31 @@ public class TitleManager : MonoBehaviour
         {
             if (titleMode == 1) // ステージセレクト画面
             {
-                // キャラ番号を取得して、ゲームを開始する
-                GameStart(); // ゲームを開始するメソッドを呼び出す
+                if(chara == 6)
+                {
+                    bool allStagesClear = true;
+                    for (int i = 0; i <= 5; i++)
+                    {
+                        if (!SaveManager.Instance.GetStageClear(i))
+                        {
+                            allStagesClear = false;
+                            break;
+                        }
+                    }
+                    if (allStagesClear)
+                    {
+                        // キャラ番号を取得して、ゲームを開始する
+                        GameStart(); // ゲームを開始するメソッドを呼び出す
+                    }
+                }
+                else
+                {
+                    // キャラ番号を取得して、ゲームを開始する
+                    GameStart(); // ゲームを開始するメソッドを呼び出す
+                }
+
+
+
             }
             else if (titleMode == 2) // CG画面
             {
