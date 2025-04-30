@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.U2D;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovementpix : MonoBehaviour
@@ -23,6 +25,7 @@ public class PlayerMovementpix : MonoBehaviour
     public float MinY;
     public float MaxX;
     public float MinX;
+    public GameObject sprite; // 透明度を変更するスプライト
 
     public LineRenderer lineRenderer;  // LineRenderer
     public BoundaryChecker boundarychecker;
@@ -331,15 +334,40 @@ public class PlayerMovementpix : MonoBehaviour
 
     public void DeathPlayer()
     {
-        secontroller.PlaySE(death);
         life -= 1;
         lifemanager.AddLife(-1);
-        //最初の点に戻る
+
+
+
+        // 最初の点に戻る
         Vector2 firstPoint = pathPoints[0];
         transform.position = firstPoint;
+
+
+
+        // ダメージ演出
+        if (sprite != null)
+        {
+            SpriteRenderer spriteRenderer = sprite.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                // 透明度を0.5秒で0.5にする
+                spriteRenderer.DOFade(1f, 0.5f)
+                    .OnComplete(() =>
+                    {
+                        // 1秒待機してから透明度を元に戻す
+                        DOVirtual.DelayedCall(1f, () =>
+                        {
+                            spriteRenderer.DOFade(0f, 0.5f);
+                        });
+                    });
+            }
+        }
+
+        // 境界内に戻ったか確認
+        boundarychecker.CheckMoveBoundary();
+        secontroller.PlaySE(death);
         pathPoints.Clear();
-        //if (!boundarychecker.isBoundary)
-        boundarychecker.CheckMoveBoundary();//境界内に戻ったか確認
     }
 
 
